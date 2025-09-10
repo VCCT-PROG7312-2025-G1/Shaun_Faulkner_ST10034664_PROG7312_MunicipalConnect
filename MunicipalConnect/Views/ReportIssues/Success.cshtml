@@ -1,0 +1,289 @@
+﻿@model MunicipalConnect.Models.IssueReport
+
+@{
+    ViewData["Title"] = "Report Submitted";
+}
+
+<div class="container py-4">
+    <div class="confirm-wrap">
+        <div class="success-hero">
+            <span class="success-icon" aria-hidden="true">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" role="img" aria-label="Success">
+                    <path d="M20 6L9 17l-5-5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+            </span>
+            <h2 class="success-title">Thank you!</h2>
+            <p class="success-subtitle">Your report has been submitted.</p>
+        </div>
+
+        <div class="card card-soft fade-in-up">
+            <div class="card-accent"></div>
+            <div class="card-body">
+                <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+                    <h5 class="card-title mb-0">Tracking ID</h5>
+                    <span class="badge-tracking">
+                        <code>@Model.TrackingId</code>
+                    </span>
+                </div>
+
+                <div class="detail-grid">
+                    <div class="detail-item">
+                        <span class="label">Location</span>
+                        <span class="value">@Model.Location</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="label">Category</span>
+                        <span class="value">@Model.Category</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="label">Submitted</span>
+                        <span class="value">
+                            @Model.CreatedAt.LocalDateTime
+                        </span>
+                    </div>
+                </div>
+
+                @if ((Model.AttachmentPaths?.Count ?? 0) > 0)
+                {
+                    <div class="attachments mt-3">
+                        <div class="label mb-1">Attachments</div>
+                        <ul class="attach-list">
+                            @foreach (var p in Model.AttachmentPaths)
+                            {
+                                <li>
+                                    <a href="@p" target="_blank">@System.IO.Path.GetFileName(p)</a>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="mt-3 d-flex flex-wrap gap-2">
+            <a asp-controller="Home" asp-action="Index" class="btn btn-primary btn-soft">Back to Menu</a>
+            <a asp-controller="ReportIssues" asp-action="Create" class="btn btn-outline-secondary btn-outline-soft">Report another issue</a>
+        </div>
+    </div>
+</div>
+
+<style>
+    :root {
+        --mc-blue: #3b82f6;
+        --mc-blue-d: #2563eb;
+        --mc-teal: #06b6d4;
+        --mc-slate: #1e293b;
+    }
+
+    .confirm-wrap {
+        max-width: 820px;
+        margin: 0 auto;
+    }
+
+    /* Hero */
+    .success-hero {
+        display: grid;
+        justify-items: center;
+        gap: .25rem;
+        margin-bottom: 1rem;
+        animation: fadeIn .4s ease both;
+        text-align: center;
+    }
+
+    .success-icon {
+        display: inline-grid;
+        place-items: center;
+        width: 52px;
+        height: 52px;
+        border-radius: 50%;
+        background: linear-gradient(180deg, var(--mc-blue), var(--mc-teal));
+        box-shadow: 0 10px 24px rgba(37, 99, 235, 0.25);
+        transform: translateY(0);
+        transition: transform .2s ease;
+    }
+
+        .success-icon:hover {
+            transform: translateY(-1px);
+        }
+
+    .success-title {
+        font-size: 1.85rem;
+        font-weight: 700;
+        color: var(--mc-slate);
+        letter-spacing: -0.2px;
+        margin: .5rem 0 0;
+    }
+
+    .success-subtitle {
+        color: #475569;
+        margin: 0;
+    }
+
+    /* Card */
+    .card-soft {
+        position: relative;
+        border: 1px solid #e2e8f0;
+        border-radius: 18px;
+        box-shadow: 0 10px 30px rgba(2, 6, 23, 0.08);
+        background: #ffffff;
+        overflow: hidden;
+    }
+
+    .card-accent {
+        position: absolute;
+        inset: 0 0 auto 0;
+        height: 6px;
+        background: linear-gradient(90deg, var(--mc-blue), var(--mc-teal));
+    }
+
+    .card-title {
+        color: #0f172a;
+        font-weight: 700;
+    }
+
+    /* Tracking badge */
+    .badge-tracking {
+        display: inline-flex;
+        align-items: center;
+        gap: .5rem;
+        padding: .35rem .6rem;
+        border-radius: 999px;
+        background: linear-gradient(90deg, #eff6ff, #e0f7fb);
+        border: 1px solid #bfdbfe;
+        color: #1e3a8a;
+        box-shadow: 0 6px 14px rgba(59,130,246,.12);
+    }
+
+        .badge-tracking code {
+            color: inherit;
+            font-weight: 800;
+            background: transparent;
+            padding: 0;
+        }
+
+    /* Details grid */
+    .detail-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: .75rem 1rem;
+        margin-top: .5rem;
+    }
+
+    @@media (min-width: 576px) {
+        .detail-grid {
+            grid-template-columns: 1fr 1fr;
+        }
+    }
+
+    @@media (min-width: 768px) {
+        .detail-grid {
+            grid-template-columns: 1fr 1fr 1fr;
+        }
+    }
+
+    .detail-item {
+        padding: .8rem;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        transition: background .2s ease, transform .1s ease, box-shadow .2s ease, border-color .2s ease;
+    }
+
+        .detail-item:hover {
+            background: linear-gradient(0deg, rgba(59,130,246,.03), rgba(6,182,212,.03));
+            border-color: #bfdbfe;
+            transform: translateY(-1px);
+            box-shadow: 0 8px 18px rgba(2, 6, 23, 0.08);
+        }
+
+        .detail-item .label {
+            display: block;
+            font-size: .8rem;
+            color: #64748b;
+            margin-bottom: .15rem;
+            letter-spacing: .2px;
+        }
+
+        .detail-item .value {
+            color: #0f172a;
+            font-weight: 700;
+            word-break: break-word;
+        }
+
+    /* Attachments */
+    .attach-list {
+        margin: 0;
+        padding-left: 1.1rem;
+    }
+
+        .attach-list li + li {
+            margin-top: .25rem;
+        }
+
+        .attach-list a {
+            color: var(--mc-blue);
+            text-decoration: none;
+            transition: color .15s ease, opacity .15s ease;
+        }
+
+            .attach-list a:hover {
+                color: var(--mc-blue-d);
+                text-decoration: underline;
+                opacity: .95;
+            }
+
+    /* Buttons */
+    .btn-soft {
+        border-radius: 10px;
+        background: linear-gradient(180deg, var(--mc-blue), var(--mc-blue-d));
+        border: none;
+        box-shadow: 0 8px 16px rgba(37, 99, 235, 0.18);
+        transition: transform .12s ease, box-shadow .2s ease, filter .2s ease;
+    }
+
+        .btn-soft:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 18px rgba(37, 99, 235, 0.24);
+            filter: brightness(1.02);
+        }
+
+    .btn-outline-soft {
+        border-radius: 10px;
+        border-color: #cbd5e1;
+        color: #334155;
+        background: #fff;
+        transition: all .2s ease;
+    }
+
+        .btn-outline-soft:hover {
+            background: #f1f5f9;
+            border-color: #94a3b8;
+            color: var(--mc-slate);
+        }
+
+    .fade-in-up {
+        animation: fadeInUp .45s ease both;
+    }
+
+    @@keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @@keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+
+        to {
+            opacity: 1;
+        }
+    }
+</style>

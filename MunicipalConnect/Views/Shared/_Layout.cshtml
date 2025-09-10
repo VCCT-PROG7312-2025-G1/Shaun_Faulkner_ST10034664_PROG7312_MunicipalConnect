@@ -1,0 +1,113 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - MunicipalConnect</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/MunicipalConnect.styles.css" asp-append-version="true" />
+    <style>
+        :root {
+            --footer-h: 56px;
+        }
+
+        html, body {
+            height: 100%;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        body {
+            background: #f0f9ff;
+            color: #1e293b;
+        }
+
+        /* Navbar */
+        .mc-navbar {
+            background: linear-gradient(90deg, #3b82f6, #06b6d4);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+            .mc-navbar .navbar-brand {
+                font-weight: 700;
+                color: #ffffff !important;
+            }
+
+            .mc-navbar .nav-link {
+                color: #e0f2fe !important;
+                border-radius: 8px;
+                transition: background 0.15s ease, transform 0.08s ease;
+            }
+
+                .mc-navbar .nav-link:hover {
+                    background: rgba(255,255,255,0.15);
+                    color: #ffffff !important;
+                    transform: translateY(-1px);
+                }
+            .mc-navbar.navbar-dark .navbar-toggler {
+                border-color: rgba(255,255,255,0.35);
+            }
+
+        .content-wrapper {
+            flex: 1;
+            padding-bottom: calc(var(--footer-h) + 10px);
+        }
+
+        .mc-footer {
+            position: fixed;
+            inset: auto 0 0 0;
+            height: var(--footer-h);
+            background: #06b6d4;
+            color: #ffffff;
+            display: grid;
+            place-items: center;
+            text-align: center;
+            box-shadow: 0 -4px 10px rgba(0,0,0,0.08);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark mc-navbar mb-3">
+            <div class="container-fluid">
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
+                    MunicipalConnect
+                </a>
+
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mcNav"
+                        aria-controls="mcNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse justify-content-end" id="mcNav">
+                    <ul class="navbar-nav gap-1">
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="ReportIssues" asp-action="Create">Report Issue</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container content-wrapper">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="mc-footer">
+        &copy; 2025 · MunicipalConnect
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

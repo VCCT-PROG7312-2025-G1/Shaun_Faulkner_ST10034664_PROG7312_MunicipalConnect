@@ -1,0 +1,199 @@
+﻿@{
+    ViewData["Title"] = "Main Menu";
+}
+
+<div class="menu-wrap py-4">
+    <div class="menu-card fade-in-up">
+        <div class="menu-hero">
+            <span class="hero-chip">Welcome</span>
+            <h1 class="menu-title">MunicipalConnect</h1>
+            <p class="menu-subtitle">Quick access to services and updates</p>
+        </div>
+
+        <div class="menu-list">
+            <a class="menu-item" asp-controller="ReportIssues" asp-action="Create">
+                <span class="mi-left"></span>
+                <span class="mi-text">Report Issues</span>
+                <span class="mi-arrow" aria-hidden="true">→</span>
+            </a>
+
+            <button class="menu-item disabled" disabled>
+                <span class="mi-left"></span>
+                <span class="mi-text">Local Events &amp; Announcements (coming soon)</span>
+            </button>
+
+            <button class="menu-item disabled" disabled>
+                <span class="mi-left"></span>
+                <span class="mi-text">Service Request Status (coming soon)</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<style>
+    :root {
+        --mc-blue: #3b82f6;
+        --mc-blue-d: #2563eb;
+        --mc-teal: #06b6d4;
+        --mc-bg: #f0f9ff;
+        --mc-slate: #1e293b;
+        --mc-soft: #e2e8f0;
+    }
+
+    .menu-wrap {
+        display: flex;
+        justify-content: center;
+    }
+
+    .menu-card {
+        width: 100%;
+        max-width: 720px;
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(2,6,23,.08);
+        padding: 2rem;
+    }
+
+    /* Hero */
+    .menu-hero {
+        text-align: center;
+        margin-bottom: 1.25rem;
+    }
+
+    .hero-chip {
+        display: inline-block;
+        font-size: .85rem;
+        font-weight: 600;
+        color: #fff;
+        padding: .25rem .6rem;
+        border-radius: 999px;
+        background: linear-gradient(90deg,var(--mc-blue),var(--mc-teal));
+        box-shadow: 0 6px 14px rgba(59,130,246,.25);
+    }
+
+    .menu-title {
+        margin: .5rem 0 0 0;
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--mc-slate);
+        letter-spacing: -.2px;
+    }
+
+    .menu-subtitle {
+        margin: .25rem 0 0 0;
+        color: #475569;
+        font-size: 1rem;
+    }
+
+    /* Menu list */
+    .menu-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        margin-top: 1rem;
+    }
+
+    /* Menu items */
+    .menu-item {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: .75rem;
+        padding: 1rem 1.25rem;
+        border-radius: 14px;
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        color: var(--mc-slate);
+        text-decoration: none;
+        font-weight: 600;
+        transition: transform .18s ease, box-shadow .22s ease, border-color .22s ease, color .18s ease, background .22s ease;
+        box-shadow: 0 2px 8px rgba(2,6,23,.04);
+        overflow: hidden;
+    }
+        .menu-item .mi-left {
+            position: absolute;
+            left: -1px;
+            top: -1px;
+            bottom: -1px;
+            width: 6px;
+            border-radius: 14px 0 0 14px;
+            background: linear-gradient(180deg,var(--mc-blue),var(--mc-teal));
+            opacity: .85;
+            transition: width .22s ease, opacity .18s ease;
+        }
+
+        .menu-item .mi-text {
+            flex: 1;
+        }
+
+        .menu-item .mi-arrow {
+            font-size: 1.15rem;
+            color: #0ea5e9;
+            transition: transform .18s ease, color .18s ease;
+        }
+
+        .menu-item:hover,
+        .menu-item:focus {
+            transform: translateY(-2px);
+            border-color: #bfdbfe;
+            box-shadow: 0 10px 22px rgba(37,99,235,.18);
+            background: linear-gradient(0deg, rgba(59,130,246,.05), rgba(6,182,212,.05));
+            outline: none;
+        }
+
+            .menu-item:hover .mi-left,
+            .menu-item:focus .mi-left {
+                width: 10px;
+                opacity: 1;
+            }
+
+            .menu-item:hover .mi-arrow,
+            .menu-item:focus .mi-arrow {
+                transform: translateX(2px);
+                color: var(--mc-blue);
+            }
+
+        .menu-item.disabled {
+            background: #f8fafc;
+            border-color: #e2e8f0;
+            color: #94a3b8;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+            .menu-item.disabled .mi-left {
+                background: linear-gradient(180deg,#cbd5e1,#94a3b8);
+                opacity: .6;
+            }
+
+    .fade-in-up {
+        animation: fadeInUp .45s ease both;
+    }
+
+    @@keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @@media (max-width: 420px) {
+        .menu-card
+
+    {
+        padding: 1.25rem;
+    }
+
+    .menu-title {
+        font-size: 1.6rem;
+    }
+
+    }
+</style>
