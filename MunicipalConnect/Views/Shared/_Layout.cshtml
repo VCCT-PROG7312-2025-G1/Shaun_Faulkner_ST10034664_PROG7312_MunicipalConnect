@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/MunicipalConnect.styles.css" asp-append-version="true" />
+    @RenderSection("Styles", required: false)
     <style>
         :root {
             --footer-h: 56px;
@@ -88,6 +89,9 @@
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" asp-controller="ReportIssues" asp-action="Create">Report Issue</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="EventsAndAnnouncements" asp-action="Event">Events & Announcements</a>
                         </li>
                     </ul>
                 </div>

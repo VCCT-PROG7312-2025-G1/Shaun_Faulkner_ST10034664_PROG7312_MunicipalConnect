@@ -1,0 +1,116 @@
+﻿@model MunicipalConnect.ViewModels.EventViewModel
+@using Microsoft.AspNetCore.Mvc.Rendering
+
+<div class="container mx-auto p-4">
+    <h1 class="text-2xl font-bold mb-4">Events &amp; Announcements</h1>
+
+    @if (Model.Announcements.Any())
+    {
+        <div class="mb-6 grid md:grid-cols-2 gap-4">
+            @foreach (var ann in Model.Announcements)
+            {
+                @Html.Partial("AnnouncementCard", ann)
+            }
+        </div>
+    }
+
+    <!-- Filter -->
+    <form method="get" class="mb-6 grid md:grid-cols-5 gap-3 items-end">
+        <div>
+            <label class="block text-sm font-medium">From</label>
+            <input type="datetime-local" name="FromTime" class="form-input w-full"
+                   value="@(Model.Filter.FromTime?.ToLocalTime().ToString("yyyy-MM-ddTHH:mm") ?? "")" />
+        </div>
+        <div>
+            <label class="block text-sm font-medium">To</label>
+            <input type="datetime-local" name="ToTime" class="form-input w-full"
+                   value="@(Model.Filter.ToTime?.ToLocalTime().ToString("yyyy-MM-ddTHH:mm") ?? "")" />
+        </div>
+        <div>
+            <label class="block text-sm font-medium">Type</label>
+            <select name="Type" class="form-select w-full">
+                <option value="">Any</option>
+                @foreach (var type in Model.AllTypes)
+                {
+                    <option value="@type" selected="@(Model.Filter.Type == type ? "selected" : null)">@type</option>
+                }
+            </select>
+        </div>
+
+        <div class="md:col-span-5 grid md:grid-cols-5 gap-3">
+            <div class="md:col-span-3">
+                <label class="block text-sm font-medium">Categories (comma separated)</label>
+                <input type="text" name="CategoriesCSV" class="form-input w-full"
+                       value="@(string.Join(", ", Model.Filter.Categories))" />
+            </div>
+            <div>
+                <label class="block text-sm font-medium">Query</label>
+                <input type="text" name="Query" class="form-input w-full" value="@Model.Filter.Query" />
+            </div>
+            <div class="md:col-span-5 flex gap-2">
+                <button class="btn btn-primary" type="submit">Apply Filters</button>
+                <a class="btn"
+                   asp-controller="EventsAndAnnouncements"
+                   asp-action="Event">Reset</a>
+            </div>
+        </div>
+    </form>
+
+    <!-- Grouped Events by Date -->
+    @if (!Model.Groups.Any())
+    {
+        <p class="text-gray-500">No events match the filters.</p>
+    }
+    else
+    {
+        foreach (var group in Model.Groups)
+        {
+            <h2 class="text-xl font-semibold mt-8 mb-3">@group.Date.ToString("dddd, dd MMM yyyy")</h2>
+            <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                @foreach (var eve in group.Items)
+                {
+                    @Html.Partial("EventCard", eve)
+                }
+            </div>
+        }
+    }
+</div>
+
+@section Styles {
+    <style>
+        .card {
+            border: 1px solid #e5e7eb;
+            border-radius: 1rem;
+            padding: 1rem;
+            box-shadow: 0 2px 6px rgba(0,0,0,.04);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: .15rem .5rem;
+            border-radius: .5rem;
+            background: #f3f4f6;
+            margin-right: .25rem;
+            font-size: .75rem;
+        }
+
+        .btn {
+            padding: .5rem .9rem;
+            border-radius: .5rem;
+            border: 1px solid #e5e7eb;
+            background: #fff;
+        }
+
+        .btn-primary {
+            background: #2563eb;
+            color: #fff;
+            border-color: #2563eb;
+        }
+
+        .form-input, .form-select {
+            border: 1px solid #e5e7eb;
+            border-radius: .5rem;
+            padding: .4rem .6rem;
+        }
+    </style>
+}

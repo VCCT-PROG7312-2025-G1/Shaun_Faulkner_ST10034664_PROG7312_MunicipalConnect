@@ -2,11 +2,13 @@ using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using MunicipalConnect.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // MVC
 builder.Services.AddControllersWithViews();
+builder.Services.AddSingleton<IEventService, EventService>();
 
 // Session
 builder.Services.AddSession(options =>
