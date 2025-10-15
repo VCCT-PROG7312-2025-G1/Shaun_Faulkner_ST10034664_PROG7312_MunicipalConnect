@@ -1,0 +1,123 @@
+﻿@model MunicipalConnect.ViewModels.EventDetailsViewModal
+@using MunicipalConnect.Models
+
+<div class="evd-body">
+    <h3 class="evd-title" data-title>@Model.Event.Title</h3>
+
+    @if (!string.IsNullOrWhiteSpace(Model.Event.Description))
+    {
+        <p class="evd-desc">@Model.Event.Description</p>
+    }
+
+    <div class="evd-meta">
+        <div><strong>Type:</strong> @Model.Event.Type</div>
+        <div><strong>When:</strong> @Model.Event.StartTime.ToLocalTime().ToString("ddd, dd MMM yyyy HH:mm")</div>
+        @if (Model.Event.EndTime is not null)
+        {
+            <div><strong>Ends:</strong> @Model.Event.EndTime.Value.ToLocalTime().ToString("ddd, dd MMM yyyy HH:mm")</div>
+        }
+        <div><strong>Where:</strong> @Model.Event.Location</div>
+    </div>
+
+    @if (Model.Event.Categories?.Any() == true)
+    {
+        <div class="evd-tags">
+            @foreach (var c in Model.Event.Categories.OrderBy(x => x))
+            {
+                <span class="evd-tag">@c</span>
+            }
+        </div>
+    }
+
+    @if (Model.Similar?.Any() == true)
+    {
+        <hr class="evd-sep" />
+        <h4 class="evd-sub">Similar events</h4>
+        <div class="evd-grid">
+            @foreach (var e in Model.Similar)
+            {
+                <div class="evd-card">
+                    @Html.Partial("EventCard", e)
+                </div>
+            }
+        </div>
+    }
+</div>
+
+<style>
+    .evd-body {
+        padding: .25rem .25rem .5rem;
+    }
+
+    .evd-title {
+        margin: 0 0 .35rem;
+        font-weight: 800;
+        color: #0f172a;
+    }
+
+    .evd-desc {
+        color: #475569;
+        margin: .25rem 0 .6rem;
+    }
+
+    .evd-meta {
+        color: #334155;
+        line-height: 1.5;
+    }
+
+        .evd-meta > div + div {
+            margin-top: .15rem;
+        }
+
+    .evd-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: .35rem;
+        margin-top: .8rem;
+    }
+
+    .evd-tag {
+        background: #f1f5f9;
+        border: 1px solid #e2e8f0;
+        color: #1e293b;
+        border-radius: 8px;
+        padding: .2rem .55rem;
+        font-size: .78rem;
+    }
+
+    .evd-sep {
+        margin: 14px 0;
+    }
+
+    .evd-sub {
+        margin: 0 0 8px;
+        font-weight: 800;
+        color: #0f172a;
+    }
+
+    .evd-grid {
+        display: grid;
+        grid-template-columns: repeat(12,1fr);
+        gap: 10px;
+    }
+
+    .evd-card {
+        grid-column: span 12;
+    }
+    @@media (min-width: 640px) {
+        .evd-card
+
+    {
+        grid-column: span 6;
+    }
+
+    }
+    @@media (min-width: 1024px) {
+        .evd-card
+
+    {
+        grid-column: span 4;
+    }
+
+    }
+</style>

@@ -2,6 +2,7 @@ using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using MunicipalConnect.Data;
 using MunicipalConnect.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -19,6 +20,13 @@ builder.Services.AddSession(options =>
 });
 
 var app = builder.Build();
+
+if (app.Environment.IsDevelopment())
+{
+    using var scope = app.Services.CreateScope();
+    var service = scope.ServiceProvider.GetRequiredService<IEventService>();
+    SeedData.Initialize(service);
+}
 
 if (!app.Environment.IsDevelopment())
 {

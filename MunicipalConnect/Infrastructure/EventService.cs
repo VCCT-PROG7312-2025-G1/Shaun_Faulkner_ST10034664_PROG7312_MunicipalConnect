@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using AspNetCoreGeneratedDocument;
+using Microsoft.AspNetCore.Components;
 using MunicipalConnect.Models;
 using System;
 using System.Collections.Generic;
@@ -8,6 +9,11 @@ namespace MunicipalConnect.Infrastructure
 {
     public interface IEventService
     {
+        /// <summary>
+        /// https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.hashset-1?view=net-9.0
+        /// </summary>
+        /// <param name="e"></param>
+        
         void AddEvent(Event e);
         void AddAnnouncement(Announcement a);
         IEnumerable<Event> Search(EventFilter filter);
@@ -18,6 +24,9 @@ namespace MunicipalConnect.Infrastructure
         IReadOnlyCollection<string> AllLocations { get; }
         void MarkViewed(Guid eventId);
         IEnumerable<Guid> RecentlyViewed(int max = 10);
+
+        IEnumerable<Event> GetSimilarEvents(Event target, int max = 6);
+        IEnumerable<Event> RecommendedForFilter(EventFilter filter, int max = 6);
 
     }
 
@@ -47,10 +56,9 @@ namespace MunicipalConnect.Infrastructure
             }
             list.Add(eve);
 
-            foreach (var cate in eve.Categories)
-            {
-                _categories.Add(cate);
-            }
+            if (eve.Categories != null)
+                foreach (var cate in eve.Categories)
+                    _categories.Add(cate);
 
             if (!string.IsNullOrEmpty(eve.Location))
                 _locations.Add(eve.Location);
@@ -138,8 +146,8 @@ namespace MunicipalConnect.Infrastructure
             {
                 var query = fil.Query.Trim();
                 source = source.Where(eve =>
-                eve.Title.Contains(query, StringComparison.OrdinalIgnoreCase) ||
-                eve.Description.Contains(query, StringComparison.OrdinalIgnoreCase));
+                    (eve.Title?.Contains(query, StringComparison.OrdinalIgnoreCase) ?? false) ||
+                    (eve.Description?.Contains(query, StringComparison.OrdinalIgnoreCase) ?? false));
             }
 
             return source.OrderBy(eve => eve.StartTime);
@@ -160,5 +168,76 @@ namespace MunicipalConnect.Infrastructure
 
         public IEnumerable<Guid> RecentlyViewed(int max = 10)
             => _recentlyViewed.Take(max);
+
+        public IEnumerable<Event> GetSimilarEvents(Event target, int max = 6)
+        {
+            var pool = _byId.Values.Where(eve => eve.Id != target.Id);
+
+            var list = new List<(Event eve, double score)>();
+            foreach (var eve in pool)
+            {
+                int overlap = (target.Categories == null || eve.Categories == null)
+                    ? 0
+                    : target.Categories.Intersect(eve.Categories, StringComparer.OrdinalIgnoreCase).Count();
+
+                if (overlap == 0) continue;
+
+                double score = 0;
+                score += overlap * 3;
+                if (eve.Type == target.Type) score += 2;
+
+                if (!string.IsNullOrWhiteSpace(target.Location) &&
+                    !string.IsNullOrWhiteSpace(eve.Location) &&
+                    string.Equals(eve.Location, target.Location, StringComparison.OrdinalIgnoreCase))
+                    score += 1;
+
+                var daysGap = Math.Abs((eve.StartTime - target.StartTime).TotalDays);
+                score -= daysGap / 45.0;
+
+                list.Add((eve, score));
+            }
+
+            return list.OrderByDescending(x => x.score)
+                       .ThenBy(x => x.eve.StartTime)
+                       .Take(max)
+                       .Select(x => x.eve);
+        }
+
+        public IEnumerable<Event> RecommendedForFilter(EventFilter filter, int max = 6)
+        {
+            var source = _byId.Values.AsEnumerable();
+
+            var targetCats = (filter.Categories != null)
+                ? new HashSet<string>(filter.Categories, StringComparer.OrdinalIgnoreCase)
+                : new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+            var list = new List<(Event eve, double score)>();
+            foreach (var ev in source)
+            {
+                double score = 0;
+
+                if (targetCats.Any() && ev.Categories?.Any() == true)
+                {
+                    int overlap = targetCats.Intersect(ev.Categories, StringComparer.OrdinalIgnoreCase).Count();
+                    if (overlap == 0) continue;
+                    score += overlap * 3;
+                }
+
+                if (filter.Type is not null && ev.Type == filter.Type.Value) score += 2;
+
+                if (!string.IsNullOrWhiteSpace(filter.Location) &&
+                    !string.IsNullOrWhiteSpace(ev.Location) &&
+                    string.Equals(ev.Location, filter.Location, StringComparison.OrdinalIgnoreCase))
+                    score += 1;
+
+                if (score <= 0) continue;
+                list.Add((ev, score));
+            }
+
+            return list.OrderByDescending(x => x.score)
+                       .ThenBy(x => x.eve.StartTime)
+                       .Take(max)
+                       .Select(x => x.eve);
+        }
     }
 }

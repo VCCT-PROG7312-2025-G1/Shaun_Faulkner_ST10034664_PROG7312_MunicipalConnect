@@ -1,32 +1,152 @@
 ﻿@model Event
 
-<div class="card">
-    <div class="flex items-center justify-between">
-        <h3 class="font-semibold text-lg">@Model.Title</h3>
-        <span class="badge">@Model.Type</span>
+<div class="event-inner">
+    <div class="event-head">
+        <h3 class="event-title">@Model.Title</h3>
+        <span class="event-type">@Model.Type</span>
     </div>
-    <p class="text-gray-600 mt-1">@Model.Description</p>
-    <div class="mt-2 text-sm">
-        <div>
-            <strong>When:</strong> @Model.StartTime.ToLocalTime().ToString("ddd, dd MMM yyyy HH:mm")
-        </div>
+
+    @if (!string.IsNullOrWhiteSpace(Model.Description))
+    {
+        <p class="event-desc">@Model.Description</p>
+    }
+
+    <div class="event-details">
+        <div><strong>When:</strong> @Model.StartTime.ToLocalTime().ToString("ddd, dd MMM yyyy HH:mm")</div>
         @if (Model.EndTime is not null)
         {
-            <div>
-                <strong>Ends:</strong> @Model.EndTime.Value.ToLocalTime().ToString("ddd, dd MMM yyyy HH:mm")
-            </div>
+            <div><strong>Ends:</strong> @Model.EndTime.Value.ToLocalTime().ToString("ddd, dd MMM yyyy HH:mm")</div>
         }
-        <div>
-            <strong>Where:</strong> @(Model.IsActive ? "Active" : Model.Location)
-        </div>
-        <div class="mt-2">
-            @foreach (var cate in Model.Categories.OrderBy(x => x))
+        <div><strong>Where:</strong> @Model.Location</div>
+    </div>
+
+    @if (Model.Categories?.Any() == true)
+    {
+        <div class="event-tags">
+            @foreach (var cat in Model.Categories.OrderBy(c => c))
             {
-                <span class="badge">@cate</span>
+                <span class="event-tag">@cat</span>
             }
         </div>
-        <div class="mt-3">
-            <a class="btn" href="@Url.Action("Details","Events", new { id = Model.Id })">View</a>
-        </div>
+    }
+
+    <div class="event-footer">
+        <a class="btn btn-soft event-cta"
+           href="@Url.Action("EventDetails", "EventsAndAnnouncements", new { id = Model.Id })"
+           data-event-id="@Model.Id">
+            View
+        </a>
     </div>
 </div>
+
+<style>
+    .event-inner {
+        display: grid;
+        grid-template-rows: auto auto auto 1fr auto;
+        gap: .4rem;
+        padding: 1rem 1.2rem;
+        border-radius: 16px;
+        background: #fff;
+        transition: transform .2s ease, box-shadow .25s ease;
+    }
+
+        .event-inner:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 24px rgba(37,99,235,.12);
+        }
+
+    .event-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: .5rem;
+    }
+
+    .event-title {
+        margin: 0;
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: #0f172a;
+        line-height: 1.2;
+    }
+
+    .event-type {
+        font-size: .78rem;
+        font-weight: 700;
+        color: #fff;
+        padding: .22rem .6rem;
+        border-radius: 999px;
+        background: linear-gradient(90deg, var(--mc-blue), var(--mc-teal));
+        box-shadow: 0 4px 10px rgba(59,130,246,.25);
+        white-space: nowrap;
+    }
+
+    .event-desc {
+        color: #475569;
+        font-size: .95rem;
+        margin: .25rem 0 .2rem;
+        line-height: 1.45;
+    }
+
+    .event-details {
+        font-size: .9rem;
+        color: #334155;
+        line-height: 1.5;
+    }
+
+        .event-details > div + div {
+            margin-top: .15rem;
+        }
+
+    .event-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: .35rem;
+        align-content: flex-start;
+        margin-top: .4rem;
+    }
+
+    .event-tag {
+        background: #f1f5f9;
+        border: 1px solid #e2e8f0;
+        color: #1e293b;
+        border-radius: 8px;
+        padding: .2rem .55rem;
+        font-size: .78rem;
+    }
+
+    .event-footer {
+        margin-top: .6rem;
+        display: flex;
+        justify-content: flex-end;
+    }
+
+    .event-cta {
+        min-width: 72px;
+        text-align: center;
+    }
+
+    .btn-soft {
+        border-radius: 10px;
+        background: linear-gradient(180deg, var(--mc-blue), var(--mc-blue-d));
+        border: none;
+        color: #fff;
+        font-weight: 700;
+        padding: .45rem .9rem;
+        box-shadow: 0 8px 16px rgba(37,99,235,.18);
+        transition: transform .12s ease, box-shadow .2s ease, filter .2s ease;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+        .btn-soft:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 18px rgba(37,99,235,.24);
+            filter: brightness(1.02);
+        }
+
+        .btn-soft:focus-visible {
+            outline: 3px solid #93c5fd;
+            outline-offset: 2px;
+        }
+</style>

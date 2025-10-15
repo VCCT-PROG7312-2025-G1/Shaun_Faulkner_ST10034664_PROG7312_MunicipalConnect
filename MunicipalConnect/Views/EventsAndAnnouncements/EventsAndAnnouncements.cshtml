@@ -1,116 +1,440 @@
 ﻿@model MunicipalConnect.ViewModels.EventViewModel
-@using Microsoft.AspNetCore.Mvc.Rendering
 
-<div class="container mx-auto p-4">
-    <h1 class="text-2xl font-bold mb-4">Events &amp; Announcements</h1>
+<div class="container py-4">
+    <div class="board-card fade-in-up">
+        <div class="card-accent"></div>
 
-    @if (Model.Announcements.Any())
-    {
-        <div class="mb-6 grid md:grid-cols-2 gap-4">
-            @foreach (var ann in Model.Announcements)
-            {
-                @Html.Partial("AnnouncementCard", ann)
-            }
-        </div>
-    }
-
-    <!-- Filter -->
-    <form method="get" class="mb-6 grid md:grid-cols-5 gap-3 items-end">
-        <div>
-            <label class="block text-sm font-medium">From</label>
-            <input type="datetime-local" name="FromTime" class="form-input w-full"
-                   value="@(Model.Filter.FromTime?.ToLocalTime().ToString("yyyy-MM-ddTHH:mm") ?? "")" />
-        </div>
-        <div>
-            <label class="block text-sm font-medium">To</label>
-            <input type="datetime-local" name="ToTime" class="form-input w-full"
-                   value="@(Model.Filter.ToTime?.ToLocalTime().ToString("yyyy-MM-ddTHH:mm") ?? "")" />
-        </div>
-        <div>
-            <label class="block text-sm font-medium">Type</label>
-            <select name="Type" class="form-select w-full">
-                <option value="">Any</option>
-                @foreach (var type in Model.AllTypes)
-                {
-                    <option value="@type" selected="@(Model.Filter.Type == type ? "selected" : null)">@type</option>
-                }
-            </select>
-        </div>
-
-        <div class="md:col-span-5 grid md:grid-cols-5 gap-3">
-            <div class="md:col-span-3">
-                <label class="block text-sm font-medium">Categories (comma separated)</label>
-                <input type="text" name="CategoriesCSV" class="form-input w-full"
-                       value="@(string.Join(", ", Model.Filter.Categories))" />
-            </div>
-            <div>
-                <label class="block text-sm font-medium">Query</label>
-                <input type="text" name="Query" class="form-input w-full" value="@Model.Filter.Query" />
-            </div>
-            <div class="md:col-span-5 flex gap-2">
-                <button class="btn btn-primary" type="submit">Apply Filters</button>
-                <a class="btn"
-                   asp-controller="EventsAndAnnouncements"
-                   asp-action="Event">Reset</a>
+        <!-- Hero -->
+        <div class="board-hero">
+            <span class="hero-chip">Discover</span>
+            <h2 class="board-title"><span class="grad-text">Events &amp; Announcements</span></h2>
+            <p class="board-subtitle">Stay up to date with what’s happening in your area</p>
+            <div class="board-stats">
+                <span class="pill">Events: @Model.Groups.Sum(g => g.Items.Count())</span>
+                <span class="pill">Announcements: @Model.Announcements.Count()</span>
             </div>
         </div>
-    </form>
 
-    <!-- Grouped Events by Date -->
-    @if (!Model.Groups.Any())
-    {
-        <p class="text-gray-500">No events match the filters.</p>
-    }
-    else
-    {
-        foreach (var group in Model.Groups)
+        <!-- Announcements -->
+        @if (Model.Announcements.Any())
         {
-            <h2 class="text-xl font-semibold mt-8 mb-3">@group.Date.ToString("dddd, dd MMM yyyy")</h2>
-            <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                @foreach (var eve in group.Items)
+            <div class="ann-grid">
+                @foreach (var ann in Model.Announcements)
                 {
-                    @Html.Partial("EventCard", eve)
+                    <div class="ann-shell">
+                        @Html.Partial("AnnouncementCard", ann)
+                    </div>
                 }
             </div>
         }
-    }
+
+        <!-- Filter toolbar -->
+        <form method="get" class="filter-toolbar">
+            <div class="ft-field">
+                <label class="form-label">From</label>
+                <input type="datetime-local" name="FromTime" class="form-control form-control-soft"
+                       value="@(Model.Filter.FromTime?.ToLocalTime().ToString("yyyy-MM-ddTHH:mm") ?? "")" />
+            </div>
+
+            <div class="ft-field">
+                <label class="form-label">To</label>
+                <input type="datetime-local" name="ToTime" class="form-control form-control-soft"
+                       value="@(Model.Filter.ToTime?.ToLocalTime().ToString("yyyy-MM-ddTHH:mm") ?? "")" />
+            </div>
+
+            <div class="ft-field">
+                <label class="form-label">Type</label>
+                <select name="Type" class="form-select form-control-soft">
+                    <option value="">Any</option>
+                    @foreach (var t in Model.AllTypes)
+                    {
+                        <option value="@t" selected="@(Model.Filter.Type == t ? "selected" : null)">@t</option>
+                    }
+                </select>
+            </div>
+
+            <div class="ft-field ft-grow">
+                <label class="form-label">Categories</label>
+                <input type="text" name="CategoriesCSV" class="form-control form-control-soft" placeholder="e.g. Water, Roads"
+                       value="@(string.Join(", ", Model.Filter.Categories))" />
+            </div>
+
+            <div class="ft-field ft-grow">
+                <label class="form-label">Query</label>
+                <input type="text" name="Query" class="form-control form-control-soft" placeholder="Search title or description…"
+                       value="@Model.Filter.Query" />
+            </div>
+
+            <div class="ft-actions">
+                <button class="btn btn-primary btn-soft" type="submit">Apply</button>
+                <a class="btn btn-outline-secondary btn-outline-soft"
+                   asp-controller="EventsAndAnnouncements"
+                   asp-action="Event">Reset</a>
+            </div>
+        </form>
+
+        <!-- Recommended Events-->
+        @if (Model.Recommended?.Any() == true)
+        {
+            <h3 class="group-heading" style="margin-top:10px;">Recommended for you</h3>
+            <div class="event-grid">
+                @foreach (var e in Model.Recommended)
+                {
+                    <div class="event-shell">
+                        @Html.Partial("EventCard", e)
+                    </div>
+                }
+            </div>
+        }
+
+        <!-- Events -->
+        @if (!Model.Groups.Any())
+        {
+            <div class="empty">
+                <div class="empty-emoji">📭</div>
+                <div>No events match the filters.</div>
+            </div>
+        }
+        else
+        {
+            <h3 class="group-heading" style="margin-top:10px;">Available Events</h3>
+            foreach (var group in Model.Groups)
+            {
+                <h4 class="group-heading">@group.Date.ToString("dddd, dd MMM yyyy")</h4>
+                <div class="event-grid">
+                    @foreach (var e in group.Items)
+                    {
+                        <div class="event-shell">
+                            @Html.Partial("EventCard", e)
+                        </div>
+                    }
+                </div>
+            }
+        }
+    </div>
+
+    <!-- https://getbootstrap.com/docs/5.0/components/modal/ -->
+    <!-- Event Details Modal -->
+    <div class="modal fade" id="eventModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="eventModalLabel">Event</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="eventModalBody">Loading…</div>
+            </div>
+        </div>
+    </div>
 </div>
 
 @section Styles {
     <style>
-        .card {
-            border: 1px solid #e5e7eb;
-            border-radius: 1rem;
-            padding: 1rem;
-            box-shadow: 0 2px 6px rgba(0,0,0,.04);
+        :root {
+            --mc-blue: #3b82f6;
+            --mc-blue-d: #2563eb;
+            --mc-teal: #06b6d4;
+            --mc-slate: #1e293b;
+            --mc-soft: #e2e8f0;
+            --muted: #475569;
+            --warn: #f59e0b;
         }
 
-        .badge {
+        .board-card {
+            position: relative;
+            max-width: 1120px;
+            margin: 0 auto;
+            padding: 1.25rem 1.25rem 1rem;
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 20px;
+            box-shadow: 0 14px 36px rgba(2,6,23,.08);
+        }
+
+        .card-accent {
+            position: absolute;
+            inset: 0 0 auto 0;
+            height: 6px;
+            border-radius: 20px 20px 0 0;
+            background: linear-gradient(90deg,var(--mc-blue),var(--mc-teal));
+            box-shadow: 0 6px 14px rgba(59,130,246,.25);
+        }
+
+        /* Hero */
+        .board-hero {
+            text-align: center;
+            margin: .35rem 0 1rem;
+        }
+
+        .hero-chip {
             display: inline-block;
-            padding: .15rem .5rem;
-            border-radius: .5rem;
-            background: #f3f4f6;
-            margin-right: .25rem;
-            font-size: .75rem;
+            font-size: .82rem;
+            font-weight: 700;
+            color: #fff;
+            padding: .25rem .6rem;
+            border-radius: 999px;
+            background: linear-gradient(90deg,var(--mc-blue),var(--mc-teal));
+            box-shadow: 0 6px 14px rgba(6,182,212,.25);
         }
 
-        .btn {
-            padding: .5rem .9rem;
-            border-radius: .5rem;
-            border: 1px solid #e5e7eb;
+        .board-title {
+            margin: .6rem 0 0;
+        }
+
+        .grad-text {
+            background: linear-gradient(90deg,var(--mc-blue),var(--mc-teal));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            font-weight: 800;
+            letter-spacing: -.2px;
+        }
+
+        .board-subtitle {
+            color: #475569;
+            margin: .2rem 0 .6rem;
+        }
+
+        .board-stats {
+            display: flex;
+            gap: .5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .pill {
+            background: #eef2ff;
+            color: #3730a3;
+            border: 1px solid #c7d2fe;
+            padding: .35rem .6rem;
+            border-radius: 999px;
+            font-size: .85rem;
+        }
+
+        /* Announcements row */
+        .ann-grid {
+            display: grid;
+            grid-template-columns: repeat(12,1fr);
+            gap: 12px;
+            margin: 6px 0 14px;
+        }
+
+        .ann-shell {
+            grid-column: span 12;
+            border: 1px solid #e2e8f0;
+            border-left: 4px solid var(--warn);
+            border-radius: 16px;
+            background: #fff;
+            box-shadow: 0 2px 6px rgba(2,6,23,.04);
+            padding: 10px 12px;
+        }
+        @@media(min-width:768px) {
+            .ann-shell
+        {
+            grid-column: span 6;
+        }
+        }
+
+        /* Filter toolbar */
+        .filter-toolbar {
+            position: static;
+            top: 6px;
+            z-index: 4;
+            display: grid;
+            grid-template-columns: repeat(12,1fr);
+            gap: 10px;
+            padding: 10px;
+            margin: 6px 0 14px;
+            background: linear-gradient(0deg,rgba(59,130,246,.03),rgba(6,182,212,.03));
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            backdrop-filter: saturate(120%) blur(3px);
+        }
+
+        .ft-field {
+            grid-column: span 12;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .ft-grow {
+            grid-column: span 12;
+        }
+
+        .form-label {
+            font-weight: 600;
+            font-size: .9rem;
+            color: #334155;
+        }
+
+        .form-control-soft, .form-select.form-control-soft {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            color: var(--mc-slate);
+            border-radius: 12px;
+            transition: background .2s, box-shadow .2s, border-color .2s, transform .08s;
+        }
+
+            .form-control-soft:hover, .form-select.form-control-soft:hover {
+                background: #f1f5f9;
+            }
+
+            .form-control-soft:focus, .form-select.form-control-soft:focus {
+                background: #fff;
+                border-color: var(--mc-blue);
+                box-shadow: 0 0 0 .15rem #e2e8f0, 0 0 0 .38rem rgba(59,130,246,.45), 0 8px 18px rgba(6,182,212,.18);
+                transform: translateY(-1px);
+                outline: none;
+            }
+
+        .ft-actions {
+            grid-column: span 12;
+            display: flex;
+            gap: 8px;
+            align-items: flex-end;
+            justify-content: flex-end;
+        }
+        @@media(min-width:768px) {
+            .ft-field
+        {
+            grid-column: span 2;
+        }
+
+        .ft-grow {
+            grid-column: span 4;
+        }
+
+        .ft-actions {
+            grid-column: span 12;
+        }
+        }
+
+        /* Groups / events */
+        .group-heading {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin: 20px 4px 10px;
+        }
+
+        .event-grid {
+            display: grid;
+            grid-template-columns: repeat(12,1fr);
+            gap: 12px;
+        }
+
+        .event-shell {
+            grid-column: span 12;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            background: #fff;
+            box-shadow: 0 2px 6px rgba(2,6,23,.04);
+            overflow: hidden;
+        }
+        @@media(min-width:640px) {
+            .event-shell
+        {
+            grid-column: span 6;
+        }
+        }
+        @@media(min-width:1024px) {
+            .event-shell
+        {
+            grid-column: span 4;
+        }
+        }
+
+        /* Buttons */
+        .btn-soft {
+            border-radius: 10px;
+            background: linear-gradient(180deg,var(--mc-blue),var(--mc-blue-d));
+            border: none;
+            box-shadow: 0 8px 16px rgba(37,99,235,.18);
+            transition: transform .12s, box-shadow .2s, filter .2s;
+        }
+
+            .btn-soft:hover {
+                transform: translateY(-1px);
+                box-shadow: 0 10px 18px rgba(37,99,235,.24);
+                filter: brightness(1.02);
+            }
+
+        .btn-outline-soft {
+            border-radius: 10px;
+            border-color: #cbd5e1;
+            color: #334155;
+            background: #fff;
+            transition: all .2s;
+        }
+
+            .btn-outline-soft:hover {
+                background: #f1f5f9;
+                border-color: #94a3b8;
+                color: var(--mc-slate);
+            }
+
+        .empty {
+            border: 1px dashed #e2e8f0;
+            border-radius: 16px;
+            padding: 18px;
+            text-align: center;
+            color: #475569;
             background: #fff;
         }
 
-        .btn-primary {
-            background: #2563eb;
-            color: #fff;
-            border-color: #2563eb;
+        .empty-emoji {
+            font-size: 1.6rem;
+            margin-bottom: 6px;
         }
 
-        .form-input, .form-select {
-            border: 1px solid #e5e7eb;
-            border-radius: .5rem;
-            padding: .4rem .6rem;
+        .fade-in-up {
+            animation: fadeInUp .5s ease both;
+        }
+        @@keyframes fadeInUp {
+            from
+
+        {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
         }
     </style>
+}
+
+@section Scripts {
+    <script>
+        document.addEventListener('click', async (e) => {
+          const trigger = e.target.closest('[data-event-id]');
+          if (!trigger) return;
+
+          e.preventDefault();
+          const id = trigger.getAttribute('data-event-id');
+
+          try {
+            const res = await fetch(`/EventsAndAnnouncements/Details/${id}`, {
+              headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            });
+            if (!res.ok) throw new Error('Failed to load event details');
+            const html = await res.text();
+
+            const body = document.getElementById('eventModalBody');
+            body.innerHTML = html;
+
+            const t = body.querySelector('[data-title]');
+            document.getElementById('eventModalLabel').textContent = t ? t.textContent : 'Event';
+
+            new bootstrap.Modal(document.getElementById('eventModal')).show();
+          } catch (err) {
+            console.error(err);
+            alert('Could not load event details.');
+          }
+        });
+    </script>
 }

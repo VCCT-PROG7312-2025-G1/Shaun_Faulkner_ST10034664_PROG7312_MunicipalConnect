@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace MunicipalConnect.Models
 {
 
-    public enum EventType { Meetup, Onsite, Randomitem }
+    public enum EventType { CommunityMeeting, PublicHearing, Workshop, Infrastructure, EmergencyResponse, CleanUpDrive, Online, ServiceOutage }
     public class Event
     {
         public Guid Id { get; init; } = Guid.NewGuid();
@@ -18,7 +18,9 @@ namespace MunicipalConnect.Models
         public bool IsActive { get; set; }
 
     }
-
+    /// <summary>
+    /// https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.hashset-1?view=net-9.0
+    /// </summary>
     public class EventFilter
     {
         public DateTime? FromTime { get; set; }

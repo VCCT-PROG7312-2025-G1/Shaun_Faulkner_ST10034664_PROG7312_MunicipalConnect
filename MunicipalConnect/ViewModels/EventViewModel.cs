@@ -10,5 +10,6 @@ namespace MunicipalConnect.ViewModels
         public IReadOnlyCollection<string> AllCategories { get; set; } = Array.Empty<string>();
         public IReadOnlyCollection<string> AllLocations { get; set; } = Array.Empty<string>();
         public IEnumerable<EventType> AllTypes { get; set; } = (EventType[])Enum.GetValues(typeof(EventType));
+        public IEnumerable<Event> Recommended {get; set;} = Enumerable.Empty<Event>();
     }
 }
