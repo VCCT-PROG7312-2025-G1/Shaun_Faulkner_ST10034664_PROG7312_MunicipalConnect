@@ -22,21 +22,50 @@ namespace MunicipalConnect.Infrastructure
 
         public static string Generate(IssueCategory category, IEnumerable<IssueReport> existing)
         {
+            var existingIds = new HashSet<string>(
+                existing.Where(r => !string.IsNullOrWhiteSpace(r?.TrackingId))
+                        .Select(r => r.TrackingId!),
+                StringComparer.OrdinalIgnoreCase
+            );
+
+            return GenerateFromIds(category, existingIds);
+        }
+
+        public static string GenerateFromIds(IssueCategory category, IEnumerable<string> existingIds)
+        {
             var cat = Prefix.TryGetValue(category, out var p) ? p : "OT";
-            var today = DateTimeOffset.Now.ToString("yyyyMMdd", CultureInfo.InvariantCulture);
+
+            var today = DateTimeOffset.UtcNow.ToString("yyyyMMdd", CultureInfo.InvariantCulture);
             var prefix = $"MC-{cat}-{today}-";
 
-            var max = existing
-                .Where(r => r.TrackingId != null && r.TrackingId.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
-                .Select(r =>
-                {
-                    var tail = r.TrackingId.Split('-')[^1];
-                    return int.TryParse(tail, out var n) ? n : 0;
-                })
-                .DefaultIfEmpty(0)
-                .Max();
+            var idSet = new HashSet<string>(
+                existingIds.Where(id => !string.IsNullOrWhiteSpace(id)),
+                StringComparer.OrdinalIgnoreCase
+            );
 
-            return $"{prefix}{(max + 1):D4}";
+            int maxSeq = 0;
+            foreach (var id in idSet)
+            {
+                if (!id.StartsWith(prefix, StringComparison.OrdinalIgnoreCase)) continue;
+
+                var tail = id.Split('-').LastOrDefault();
+                if (tail is null) continue;
+
+                if (int.TryParse(tail, NumberStyles.Integer, CultureInfo.InvariantCulture, out var n))
+                {
+                    if (n > maxSeq) maxSeq = n;
+                }
+            }
+
+            int next = maxSeq + 1;
+            string candidate;
+            do
+            {
+                candidate = $"{prefix}{next:D4}";
+                next++;
+            } while (idSet.Contains(candidate));
+
+            return candidate;
         }
     }
 }

@@ -1,0 +1,66 @@
+{
+  "Items": [
+    {
+      "Id": "0f5d7e22-bdfb-41c5-a654-183d7b5a152d",
+      "TrackingId": "MC-RD-20251112-0001",
+      "CreatedAt": "2025-11-12T09:44:58.2970028+00:00",
+      "Location": "Cape Town",
+      "Category": 0,
+      "Description": "A massive pothole in the middle of the road. Literally swallowed a car.",
+      "AttachmentPaths": [
+        "/uploads/MC-RD-20251112-0001/1762940698358_thumbnail.png"
+      ],
+      "Status": 0
+    },
+    {
+      "Id": "4e91c7c2-9a21-40b2-8ef8-9dc2a9ad9e0b",
+      "TrackingId": "MC-WT-20251109-0002",
+      "CreatedAt": "2025-11-09T10:00:00+00:00",
+      "Location": "Table View, Cape Town",
+      "Category": 1,
+      "Description": "Burst water pipe near Blaauwberg Road causing flooding along the main intersection.",
+      "AttachmentPaths": [],
+      "Status": 1
+    },
+    {
+      "Id": "e29c39a0-24f1-4b61-aef7-05b45a3b7c41",
+      "TrackingId": "MC-RD-20251110-0003",
+      "CreatedAt": "2025-11-10T08:00:00+00:00",
+      "Location": "Milnerton, Cape Town",
+      "Category": 0,
+      "Description": "Multiple potholes forming along Koeberg Road after recent rainfall.",
+      "AttachmentPaths": [],
+      "Status": 0
+    },
+    {
+      "Id": "c3e1de53-94df-4e2c-b4b5-d9b5642987c1",
+      "TrackingId": "MC-EL-20251105-0004",
+      "CreatedAt": "2025-11-05T14:30:00+00:00",
+      "Location": "Parklands North, Cape Town",
+      "Category": 2,
+      "Description": "Streetlights on Sandown Road have been off for over a week. Area remains dark at night.",
+      "AttachmentPaths": [],
+      "Status": 2
+    },
+    {
+      "Id": "a96a01e5-04b3-4b97-b44b-4fa1d4d5ad6c",
+      "TrackingId": "MC-WS-20251111-0005",
+      "CreatedAt": "2025-11-11T09:00:00+00:00",
+      "Location": "Sunningdale, Cape Town",
+      "Category": 4,
+      "Description": "Missed waste collection this week. Bins have been left uncollected for two days.",
+      "AttachmentPaths": [],
+      "Status": 1
+    },
+    {
+      "Id": "3f98789e-5973-4976-b72c-5a05c1b9f95b",
+      "TrackingId": "MC-PS-20251112-0006",
+      "CreatedAt": "2025-11-12T07:15:00+00:00",
+      "Location": "Century City, Cape Town",
+      "Category": 6,
+      "Description": "Broken pedestrian crossing signal near Century Boulevard posing safety risk.",
+      "AttachmentPaths": [],
+      "Status": 0
+    }
+  ]
+}

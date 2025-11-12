@@ -22,8 +22,9 @@
                 <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
                     <h5 class="card-title mb-0">Tracking ID</h5>
                     <span class="badge-tracking">
-                        <code>@Model.TrackingId</code>
+                        <code id="trackId">@Model.TrackingId</code>
                     </span>
+                    <button type="button" class="btn btn-sm btn-outline-soft" id="copyBtn" aria-label="Copy tracking ID">Copy</button>
                 </div>
 
                 <div class="detail-grid">
@@ -38,25 +39,34 @@
                     <div class="detail-item">
                         <span class="label">Submitted</span>
                         <span class="value">
-                            @Model.CreatedAt.LocalDateTime
+                            @Model.CreatedAt.ToLocalTime().ToString("g")
                         </span>
                     </div>
                 </div>
 
-                @if ((Model.AttachmentPaths?.Count ?? 0) > 0)
+                @if ((Model?.AttachmentPaths?.Count ?? 0) > 0)
                 {
                     <div class="attachments mt-3">
                         <div class="label mb-1">Attachments</div>
                         <ul class="attach-list">
                             @foreach (var p in Model.AttachmentPaths)
                             {
-                                <li>
-                                    <a href="@p" target="_blank">@System.IO.Path.GetFileName(p)</a>
-                                </li>
+                                if (!string.IsNullOrWhiteSpace(p))
+                                {
+                                    <li>
+                                        <a href="@p" target="_blank" rel="noopener">@System.IO.Path.GetFileName(p)</a>
+                                    </li>
+                                }
                             }
                         </ul>
                     </div>
                 }
+
+                <div class="mt-3">
+                    <small class="text-muted d-block">
+                        Keep your tracking ID safe. You may be asked for it if we need more details.
+                    </small>
+                </div>
             </div>
         </div>
 
@@ -287,3 +297,21 @@
         }
     }
 </style>
+
+@section Scripts {
+    <script>
+        (function(){
+            const btn = document.getElementById('copyBtn');
+            const code = document.getElementById('trackId');
+            if (!btn || !code) return;
+
+            btn.addEventListener('click', async () => {
+                try {
+                    await navigator.clipboard.writeText(code.textContent || '');
+                    btn.textContent = 'Copied';
+                    setTimeout(() => btn.textContent = 'Copy', 1200);
+                } catch { }
+            });
+        })();
+    </script>
+}

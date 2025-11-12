@@ -18,23 +18,28 @@
         </div>
 
         <form asp-action="Create" method="post" enctype="multipart/form-data" id="reportForm">
+            @Html.AntiForgeryToken()
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
             <div class="mb-3">
                 <label asp-for="Location" class="form-label">Location</label>
-                <input asp-for="Location" class="form-control form-control-soft" placeholder="Address / location" />
+                <input asp-for="Location" class="form-control form-control-soft" maxlength="140"
+                       placeholder="Address / location" />
                 <span asp-validation-for="Location" class="text-danger"></span>
             </div>
 
             <div class="mb-3">
                 <label asp-for="Category" class="form-label">Category</label>
-                <select asp-for="Category" class="form-select form-control-soft" asp-items="Html.GetEnumSelectList<IssueCategory>()"></select>
+                <select asp-for="Category" class="form-select form-control-soft"
+                        asp-items="Html.GetEnumSelectList<IssueCategory>()">
+                </select>
                 <span asp-validation-for="Category" class="text-danger"></span>
             </div>
 
             <div class="mb-3">
                 <label asp-for="Description" class="form-label">Description</label>
                 <textarea asp-for="Description" class="form-control form-control-soft" rows="5"
+                          minlength="20" maxlength="1000"
                           placeholder="Describe the problem, when you noticed it, and any risks."></textarea>
                 <span asp-validation-for="Description" class="text-danger"></span>
             </div>
@@ -43,12 +48,14 @@
                 <label class="form-label" for="files">Attachments (images/documents)</label>
                 <div class="file-wrap">
                     <input id="files" name="files" type="file" class="form-control form-control-soft file-input" multiple
-                           accept=".jpg,.jpeg,.png,.bmp,.gif,.pdf,.docx,.xlsx,.txt" />
+                           accept=".jpg,.jpeg,.png,.pdf,.heic,.webp" />
                     <div class="file-hint">
                         <strong>Click to choose</strong> or drag files here
-                        <span class="muted">.jpg .png .pdf .docx .xlsx</span>
+                        <span class="muted">.jpg .png .pdf .heic .webp</span>
                     </div>
+                    <small class="text-muted d-block mt-1">Max 10MB per file.</small>
                 </div>
+                <div id="fileErrors" class="text-danger mt-1" style="display:none;"></div>
             </div>
 
             <div class="mb-3">
@@ -138,8 +145,7 @@
     }
 
     /* Inputs */
-    .form-control-soft,
-    .form-select.form-control-soft {
+    .form-control-soft, .form-select.form-control-soft {
         background: #f8fafc;
         border: 1px solid #e2e8f0;
         color: var(--mc-slate);
@@ -147,13 +153,11 @@
         transition: background .2s ease, box-shadow .2s ease, border-color .2s ease, transform .08s ease;
     }
 
-        .form-control-soft:hover,
-        .form-select.form-control-soft:hover {
+        .form-control-soft:hover, .form-select.form-control-soft:hover {
             background: #f1f5f9;
         }
 
-        .form-control-soft:focus,
-        .form-select.form-control-soft:focus {
+        .form-control-soft:focus, .form-select.form-control-soft:focus {
             background: #ffffff;
             border-color: var(--mc-blue);
             box-shadow: 0 0 0 .15rem #e2e8f0, 0 0 0 .38rem rgba(59,130,246,.45), 0 8px 18px rgba(6,182,212,.18);
@@ -283,16 +287,13 @@
 
     /* Small screens */
     @@media (max-width: 420px) {
-        .form-card
+        .form-card {
+            padding: 1.25rem;
+        }
 
-    {
-        padding: 1.25rem;
-    }
-
-    .form-title {
-        font-size: 1.5rem;
-    }
-
+        .form-title {
+            font-size: 1.5rem;
+        }
     }
 </style>
 
@@ -304,6 +305,10 @@
         const descEl = document.getElementById('Description');
         const filesEl = document.getElementById('files');
         const bar = document.getElementById('completeBar');
+        const fileErrors = document.getElementById('fileErrors');
+
+        const allowed = new Set(['.jpg','.jpeg','.png','.pdf','.heic','.webp']);
+        const maxBytes = 10 * 1024 * 1024;
 
         function score() {
             let s = 0;
@@ -326,12 +331,39 @@
             bar.setAttribute('aria-valuenow', v.toString());
             setBarClass(v);
         }
+
+        function validateFiles() {
+            fileErrors.style.display = 'none';
+            fileErrors.textContent = '';
+            if (!filesEl || !filesEl.files) return true;
+
+            for (const f of filesEl.files) {
+                const ext = (f.name.substring(f.name.lastIndexOf('.')) || '').toLowerCase();
+                if (!allowed.has(ext)) {
+                    fileErrors.textContent = `File type not allowed: ${ext}`;
+                    fileErrors.style.display = 'block';
+                    return false;
+                }
+                if (f.size > maxBytes) {
+                    fileErrors.textContent = `File "${f.name}" exceeds 10 MB.`;
+                    fileErrors.style.display = 'block';
+                    return false;
+                }
+            }
+            return true;
+        }
+
         ['input', 'change'].forEach(evt => {
             locEl?.addEventListener(evt, update);
             catEl?.addEventListener(evt, update);
             descEl?.addEventListener(evt, update);
-            filesEl?.addEventListener(evt, update);
+            filesEl?.addEventListener(evt, () => { update(); validateFiles(); });
         });
+
+        document.getElementById('reportForm')?.addEventListener('submit', (e) => {
+            if (!validateFiles()) e.preventDefault();
+        });
+
         update();
     </script>
 }

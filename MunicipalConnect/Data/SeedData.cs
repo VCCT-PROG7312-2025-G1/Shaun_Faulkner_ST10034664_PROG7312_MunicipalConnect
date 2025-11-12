@@ -1,4 +1,5 @@
 ﻿using MunicipalConnect.Infrastructure;
+using MunicipalConnect.Infrastructure.Indexing;
 using MunicipalConnect.Models;
 
 namespace MunicipalConnect.Data

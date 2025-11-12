@@ -14,19 +14,20 @@
             <a class="menu-item" asp-controller="ReportIssues" asp-action="Create">
                 <span class="mi-left"></span>
                 <span class="mi-text">Report Issues</span>
-                <span class="mi-arrow" aria-hidden="true">→</span>
+                <span class="mi-arrow">→</span>
             </a>
 
             <a class="menu-item" asp-controller="EventsAndAnnouncements" asp-action="Event">
                 <span class="mi-left"></span>
                 <span class="mi-text">Local Events &amp; Announcements</span>
-                <span class="mi-arrow" aria-hidden="true">→</span>
+                <span class="mi-arrow">→</span>
             </a>
 
-            <button class="menu-item disabled" disabled>
+            <a class="menu-item" asp-controller="IssueStatus" asp-action="Index">
                 <span class="mi-left"></span>
-                <span class="mi-text">Service Request Status (coming soon)</span>
-            </button>
+                <span class="mi-text">Service Request Status</span>
+                <span class="mi-arrow">→</span>
+            </a>
         </div>
     </div>
 </div>

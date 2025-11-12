@@ -10,8 +10,18 @@ namespace MunicipalConnect.Controllers
     public class EventsAndAnnouncementsController : Controller
     {
 
+        ///------------------------------------
+        /// <summary>
+        /// Handles listing and searching of events and announcements
+        /// </summary>
+        ///------------------------------------
+
         private readonly IEventService _serv;
         public EventsAndAnnouncementsController(IEventService serv) => _serv = serv;
+
+        ///------------------------------------
+        /// Gets events and announcements
+        ///------------------------------------
 
         [HttpGet("Event")]
         public IActionResult Event([FromQuery] EventFilter filter)
@@ -42,6 +52,10 @@ namespace MunicipalConnect.Controllers
             
 
         }
+
+        ///------------------------------------
+        /// Shows partial with event details and similar events
+        ///------------------------------------
 
         [HttpGet("Details/{id:guid}")]
         public IActionResult EventDetails(Guid id)

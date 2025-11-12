@@ -1,0 +1,237 @@
+﻿@model IReadOnlyList<MunicipalConnect.Models.IssueReport>
+@{
+    ViewData["Title"] = "Service Requests";
+    var categories = Enum.GetNames(typeof(MunicipalConnect.Models.IssueCategory));
+    var statuses = Enum.GetNames(typeof(MunicipalConnect.Models.IssueStatus));
+}
+
+<div class="container py-4">
+    <div class="form-card fade-in-up">
+        <div class="card-accent"></div>
+
+        <!-- Hero -->
+        <div class="form-hero">
+            <span class="hero-chip">Status</span>
+            <h2 class="form-title"><span class="grad-text">Service Request Status</span></h2>
+            <p class="form-subtitle">View Service Requests Status</p>
+        </div>
+
+        <!-- Filters -->
+        <div class="filter-bar">
+            <div class="filter-group">
+                <a asp-action="Index" asp-route-sort="urgent" class="filter-btn @(Context.Request.Query["sort"] == "urgent" ? "active" : "")">
+                    Urgency
+                </a>
+                <a asp-action="Index" asp-route-sort="id" class="filter-btn @(Context.Request.Query["sort"] == "id" ? "active" : "")">
+                    Tracking ID
+                </a>
+            </div>
+
+            <div class="filter-selects">
+                <select class="filter-select">
+                    <option disabled selected>Filter by Category</option>
+                    @foreach (var cat in categories)
+                    {
+                        <option>@cat</option>
+                    }
+                </select>
+
+                <select class="filter-select">
+                    <option disabled selected>Filter by Status</option>
+                    @foreach (var st in statuses)
+                    {
+                        <option>@st</option>
+                    }
+                </select>
+            </div>
+        </div>
+
+        <!-- Table -->
+        <div class="table-responsive mt-3">
+            <table class="table table-hover align-middle table-soft">
+                <thead class="table-light">
+                    <tr>
+                        <th>Tracking ID</th>
+                        <th>Location</th>
+                        <th>Category</th>
+                        <th>Description</th>
+                        <th>Status</th>
+                        <th>Created</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var issue in Model)
+                    {
+                        <tr class="row-soft">
+                            <td><code>@issue.TrackingId</code></td>
+                            <td>@issue.Location</td>
+                            <td>@issue.Category</td>
+                            <td class="desc-cell">@issue.Description</td>
+                            <td>
+                                <span class="badge badge-soft bg-@(issue.Status switch {
+                                    MunicipalConnect.Models.IssueStatus.Submitted  => "secondary",
+                                    MunicipalConnect.Models.IssueStatus.InProgress => "info",
+                                    MunicipalConnect.Models.IssueStatus.Resolved   => "success",
+                                    MunicipalConnect.Models.IssueStatus.Closed     => "dark",
+                                    _ => "light"
+                                })">@issue.Status</span>
+                            </td>
+                            <td>@issue.CreatedAt.LocalDateTime.ToString("g")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<style>
+    :root {
+        --mc-blue: #3b82f6;
+        --mc-blue-d: #2563eb;
+        --mc-teal: #06b6d4;
+        --mc-slate: #1e293b;
+    }
+
+    .form-card {
+        position: relative;
+        max-width: 980px;
+        margin: 0 auto;
+        padding: 1.5rem 1.25rem;
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 20px;
+        box-shadow: 0 14px 36px rgba(2,6,23,0.08);
+    }
+
+    .card-accent {
+        position: absolute;
+        inset: 0 0 auto 0;
+        height: 6px;
+        border-radius: 20px 20px 0 0;
+        background: linear-gradient(90deg, var(--mc-blue), var(--mc-teal));
+        box-shadow: 0 6px 14px rgba(59,130,246,0.25);
+    }
+
+    .form-hero {
+        text-align: center;
+        margin-bottom: 1.25rem;
+    }
+
+    .hero-chip {
+        display: inline-block;
+        font-size: .82rem;
+        font-weight: 700;
+        color: #fff;
+        padding: .25rem .6rem;
+        border-radius: 999px;
+        background: linear-gradient(90deg,var(--mc-blue),var(--mc-teal));
+        box-shadow: 0 6px 14px rgba(6,182,212,.25);
+    }
+
+    .grad-text {
+        background: linear-gradient(90deg, var(--mc-blue), var(--mc-teal));
+        -webkit-background-clip: text;
+        color: transparent;
+        font-weight: 800;
+    }
+
+    .form-subtitle {
+        color: #475569;
+        font-size: .95rem;
+        margin-top: .2rem;
+    }
+
+    /* Filter Bar */
+    .filter-bar {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+        gap: .75rem 1rem;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 14px;
+        padding: .75rem 1rem;
+        box-shadow: 0 6px 14px rgba(2,6,23,.04);
+    }
+
+    .filter-group {
+        display: flex;
+        gap: .5rem;
+    }
+
+    .filter-btn {
+        padding: .4rem .9rem;
+        border-radius: 10px;
+        font-weight: 600;
+        color: var(--mc-slate);
+        background: #fff;
+        border: 1px solid #cbd5e1;
+        text-decoration: none;
+        transition: all .2s ease;
+    }
+
+    .filter-btn:hover, .filter-btn.active {
+        color: #fff;
+        background: linear-gradient(90deg, var(--mc-blue), var(--mc-teal));
+        border-color: transparent;
+        box-shadow: 0 6px 14px rgba(37,99,235,.25);
+    }
+
+    .filter-selects {
+        display: flex;
+        gap: .5rem;
+    }
+
+    .filter-select {
+        border-radius: 10px;
+        padding: .45rem .75rem;
+        border: 1px solid #cbd5e1;
+        background: #fff;
+        font-weight: 500;
+        color: #1e293b;
+        box-shadow: 0 2px 6px rgba(2,6,23,.05);
+        transition: border .2s ease, box-shadow .2s ease;
+    }
+
+    .filter-select:hover, .filter-select:focus {
+        border-color: var(--mc-blue);
+        box-shadow: 0 6px 12px rgba(37,99,235,.12);
+        outline: none;
+    }
+
+    /* Table */
+    .table-soft {
+        border: 1px solid #e2e8f0;
+        border-radius: 14px;
+        overflow: hidden;
+    }
+
+    .table-soft thead th {
+        background: #f8fafc;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .row-soft {
+        transition: background .18s ease, transform .06s ease;
+    }
+
+    .row-soft:hover {
+        background: linear-gradient(0deg, rgba(59,130,246,.03), rgba(6,182,212,.03));
+        transform: translateY(-1px);
+    }
+
+    .desc-cell {
+        max-width: 420px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .fade-in-up { animation: fadeInUp .45s ease both; }
+    @@keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>
