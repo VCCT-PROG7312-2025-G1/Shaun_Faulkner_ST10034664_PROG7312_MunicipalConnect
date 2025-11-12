@@ -1,11 +1,11 @@
 
 # Municipal Connect (ASP.NET Core MVC, .NET 8)
 
-Citizen-facing **municipal services** prototype focused on **Report Issues**.
+Citizen-facing **municipal services** prototype focused on **Report Issues** and **Events and Announcements**.
 
 This project uses (no arrays/lists): `SortedDictionary<string, IssueReport>` in Session, `HashSet<string>` for attachment paths, and a `Dictionary<IssueCategory,string>` for tracking‑ID prefixes.
 
-**Status**: Part 1 — *Report Issues* is implemented. *Local Events & Announcements* and *Service Request Status* are visible but disabled (to be implemented).
+**Status**: Part 2 - Implementation of Events and Announcements page, making use of advanced data structures to display events and announcements that are categorised, also added functionality to display recommended events to the user based on selected events.
 
 -----------------
 ## Features
@@ -17,6 +17,8 @@ This project uses (no arrays/lists): `SortedDictionary<string, IssueReport>` in 
 - **Human‑friendly Tracking ID**: `MC-<prefix>-yyyyMMdd-####` (e.g., `MC-WT-20250909-0001`).
 - **Session-backed storage**: map + set.
 - **File uploads** saved to `wwwroot/uploads/{TrackingId}` with links on the success page.
+- Events display with further modal popup displaying event details with event recommendations after filtering and on modal popup.
+- Announcements are displayed.
 
 -----------------
 ## Prerequisites
